@@ -10,7 +10,7 @@ namespace Jax3.Models
     [Table("Competitions")]
     public class Competition
     {
-        public int Id { get; set; }
+        public int Id { get; set; } // test
         public string Name { get; set; }
         public User CreatedBy { get; set; }
         public int CreatedById { get; set; }
