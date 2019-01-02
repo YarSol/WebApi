@@ -10,8 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using System.Data.SqlClient;
 using AutoMapper;
 using Jax3.Resources;
 
@@ -53,7 +51,7 @@ namespace Jax3.Controllers
                     .ThenInclude(p => p.CreatedBy)
                 .SingleOrDefaultAsync(p => p.Id == model.Id);
 
-            return GetToken(mapper.Map<User, UserResource>(user));
+            return GetToken(mapper.Map<User, IUserResourceShort>(user));
         }
 
         [HttpPost]
@@ -74,10 +72,10 @@ namespace Jax3.Controllers
                 return BadRequest(ModelState);
             }
 
-            return GetToken(mapper.Map<User, UserResource>(user));
+            return GetToken(mapper.Map<User, IUserResourceShort>(user));
         }
 
-        private object GetToken(UserResource model)
+        private object GetToken(IUserResourceShort model)
         {
             var claims = new List<Claim>
                 {

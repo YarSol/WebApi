@@ -28,26 +28,26 @@ namespace Jax3.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCompetition([FromBody] SaveCompetitionResource competitionResource)
+        public async Task<IActionResult> CreateCompetition([FromBody] SaveCompetitionResource saveCompetitionResource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var competition = mapper.Map<SaveCompetitionResource, Competition>(competitionResource);
+            var competition = mapper.Map<SaveCompetitionResource, Competition>(saveCompetitionResource);
             await context.Competitions.AddAsync(competition);
             await context.SaveChangesAsync();
 
-            var competitionInDatabase = await context.Competitions
+            competition = await context.Competitions
                 .Include(p => p.CreatedBy)
                 .Include(p => p.Participants)
                     .ThenInclude(p => p.User)
                 .SingleOrDefaultAsync(p => p.Id == competition.Id);
 
-            return Ok(mapper.Map<Competition, CompetitionResource>(competition));
+            return Ok(mapper.Map<Competition, ICompetitionResource>(competition));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompetition(int id, [FromBody] SaveCompetitionResource competitionResource)
+        public async Task<IActionResult> UpdateCompetition(int id, [FromBody] SaveCompetitionResource saveCompetitionResource)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -61,23 +61,22 @@ namespace Jax3.Controllers
             if (competition == null)
                 return NotFound();
 
-            mapper.Map(competitionResource, competition);
+            mapper.Map(saveCompetitionResource, competition);
 
             await context.SaveChangesAsync();
 
-            return Ok(mapper.Map<Competition, CompetitionResource>(competition));
+            return Ok(mapper.Map<Competition, ICompetitionResource>(competition));
         }
 
         [HttpGet]
-        public async Task<IEnumerable<CompetitionResource>> GetCompetitions()
+        public async Task<IEnumerable<ICompetitionResourceShort>> GetCompetitions()
         {
             var competitions = await context.Competitions
                 .Include(p => p.CreatedBy)
                 .Include(p => p.Participants)
-                    .ThenInclude(p => p.User)
                 .ToListAsync();
 
-            return mapper.Map<List<Competition>, List<CompetitionResource>>(competitions);
+            return mapper.Map<List<Competition>, List<ICompetitionResourceShort>>(competitions);
         }
 
         [HttpGet("{id}")]
@@ -92,7 +91,7 @@ namespace Jax3.Controllers
             if (competition == null)
                 return NotFound();
 
-            return Ok(mapper.Map<Competition, CompetitionResource>(competition));
+            return Ok(mapper.Map<Competition, ICompetitionResource>(competition));
         }
 
         [HttpDelete("{id}")]

@@ -18,9 +18,10 @@ namespace Jax3.Mapping
             CreateMap<User, SaveUserResource>()
                 .ForMember(p => p.Competitions, opt => opt.MapFrom(v => v.Competitions.Select(p => p.CompetitionId)));
 
-            CreateMap<Competition, CompetitionResource>()
+
+            CreateMap<Competition, ICompetitionResource>()
                  .ForMember(p => p.ParticipantsAmount, opt => opt.MapFrom(v => v.Participants.Count))
-                 .ForMember(p => p.Participants, opt => opt.MapFrom(v => v.Participants.Select(p => new UserResource
+                 .ForMember(p => p.Participants, opt => opt.MapFrom(v => v.Participants.Select(p => new User
                  {
                      Id = p.UserId,
                      FirstName = p.User.FirstName,
@@ -28,14 +29,20 @@ namespace Jax3.Mapping
                      Email = p.User.Email
                  })));
 
+            CreateMap<Competition, ICompetitionResourceShort>()
+                 .ForMember(p => p.ParticipantsAmount, opt => opt.MapFrom(v => v.Participants.Count));
 
-            CreateMap<User, UserResource>()
+
+            CreateMap<User, IUserResourceShort>()
+                 .ForMember(p => p.CompetitionsAmount, opt => opt.MapFrom(v => v.Competitions.Count));
+
+            CreateMap<User, IUserResource>()
                  .ForMember(p => p.CompetitionsAmount, opt => opt.MapFrom(v => v.Competitions.Count))
-                 .ForMember(p => p.Competitions, opt => opt.MapFrom(v => v.Competitions.Select(p => new CompetitionResource
+                 .ForMember(p => p.Competitions, opt => opt.MapFrom(v => v.Competitions.Select(p => new Competition
                  {
                      Id = p.CompetitionId,
                      Name = p.Competition.Name,
-                     CreatedBy = new UserResource
+                     CreatedBy = new User
                      {
                          Id = p.Competition.CreatedBy.Id,
                          FirstName = p.Competition.CreatedBy.FirstName,

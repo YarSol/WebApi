@@ -29,7 +29,7 @@ namespace Jax3.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<UserResource>> GetUsers()
+        public async Task<IEnumerable<IUserResourceShort>> GetUsers()
         {
             var users = await context.Users
                 .Include(p => p.Competitions)
@@ -37,7 +37,7 @@ namespace Jax3.Controllers
                     .ThenInclude(p => p.CreatedBy)
                 .ToListAsync();
 
-            return mapper.Map<List<User>, List<UserResource>>(users);
+            return mapper.Map<List<User>, List<IUserResourceShort>>(users);
         }
 
         [HttpGet("{id}")]
@@ -52,7 +52,7 @@ namespace Jax3.Controllers
             if (user == null)
                 return NotFound();
 
-            return Ok(mapper.Map<User, UserResource>(user));
+            return Ok(mapper.Map<User, IUserResource>(user));
         }
 
         [HttpPut("{id}")]
@@ -74,7 +74,7 @@ namespace Jax3.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(mapper.Map<User, UserResource>(user));
+            return Ok(mapper.Map<User, IUserResource>(user));
         }
     }
 }
